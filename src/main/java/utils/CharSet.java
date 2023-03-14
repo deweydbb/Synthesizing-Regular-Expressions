@@ -1,11 +1,16 @@
 package utils;
 
+import lombok.Getter;
+
 public class CharSet {
 
     private static final int LONG_NUM_BITS = 64;
 
     private long s1;
     private long s2;
+
+    @Getter
+    private int size;
 
     public CharSet() {}
 
@@ -15,6 +20,7 @@ public class CharSet {
     }
 
     public void addChar(char c) {
+        size++;
         if (c < LONG_NUM_BITS) {
             long mask = 1L << c;
             s1 |= mask;
@@ -26,6 +32,7 @@ public class CharSet {
     }
 
     public void removeChar(char c) {
+        size--;
         if (c < LONG_NUM_BITS) {
             long mask = ~(1L << c);
             s1 &= mask;

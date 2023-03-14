@@ -15,28 +15,18 @@ public class Main {
         String example1 = "aab";
         Graph g1 = GenerateGraph.generateGraph(enumerator, example1, 0, example1.length());
 
-        List<String> possible1 = g1.listPossibleRegExpr();
-
-        for (String regEx : possible1) {
-            System.out.println(regEx);
-        }
-
-
-        System.out.println("--------");
 
         enumerator.reset();
         String example2 = "ab";
         Graph g2 = GenerateGraph.generateGraph(enumerator, example2, 0, example2.length());
 
-        List<String> possible2 = g2.listPossibleRegExpr();
+        Graph result = g1.intersection(g2);
 
-        for (String regEx : possible2) {
+        List<String> list = result.listPossibleRegExpr();
+
+        for (String regEx : list) {
             System.out.println(regEx);
         }
-
-        System.out.println("--------");
-
-        g1.intersection(g2);
 
     }
 }
