@@ -1,5 +1,8 @@
 package utils;
 
+/**
+ * Represents a set of characters to match. Can include a quantifier
+ */
 public class CharClass {
 
     private final String representation;

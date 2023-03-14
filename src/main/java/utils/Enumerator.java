@@ -4,6 +4,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+
+/**
+ * The Enumerator class performs bottom up enumeration of character classes
+ */
 public class Enumerator implements Iterator<CharClass> {
 
     private static final List<String> baseCharClasses = List.of("a", "b", "c", "d");
@@ -35,7 +39,9 @@ public class Enumerator implements Iterator<CharClass> {
         return currentCharClasses.size() > 0 || currentClass != null;
     }
 
-    @Override
+    /**
+     * returns the next character class
+     */
     public CharClass next() {
         assert currentClass != null;
 

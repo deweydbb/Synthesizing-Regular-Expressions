@@ -2,12 +2,17 @@ package utils;
 
 import lombok.Getter;
 
+/**
+ * Represents a set of characters. Since only ascii characters are used
+ * two longs are used to represent all characters. The position of the bit encodes the character
+ * 1 means it is in the set, 0 otherwise
+ */
 public class CharSet {
 
     private static final int LONG_NUM_BITS = 64;
 
-    private long s1;
-    private long s2;
+    private long s1; // first 64 ascii characters
+    private long s2; // second set of 64 ascii characters
 
     @Getter
     private int size;
@@ -53,14 +58,6 @@ public class CharSet {
             return (s2 & mask) != 0;
         }
     }
-
-    public CharSet intersection(CharSet other) {
-        long newS1 = s1 & other.s1;
-        long newS2 = s2 & other.s2;
-
-        return new CharSet(newS1, newS2);
-    }
-
 
     public CharSet copy() {
         return new CharSet(s1, s2);

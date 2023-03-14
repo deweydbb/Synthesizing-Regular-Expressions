@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 public class GenerateGraph {
 
+    // Given an example and an enumerator, generates a version space for the example
     public static Graph generateGraph(Enumerator enumerator, String example, int start, int end) {
         Graph g = new Graph(end - start);
 
