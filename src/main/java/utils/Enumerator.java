@@ -21,6 +21,7 @@ public class Enumerator implements Iterator<CharClass> {
     }
 
     public void reset() {
+        currentCharClasses.clear();
         for (String chars : baseCharClasses) {
             currentCharClasses.add(new CharClass(chars));
         }

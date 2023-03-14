@@ -25,6 +25,7 @@ public class GenerateGraph {
             while (matcher.find()) {
                 int matchStart = matcher.start();
                 int matchEnd = matcher.end();
+                if (matchStart == matchEnd) continue;
 
                 g.insert(matchStart, matchEnd, c);
             }

@@ -12,14 +12,31 @@ public class Main {
 
         Enumerator enumerator = new Enumerator(List.of(Quantifier.STAR, Quantifier.PLUS));
 
-        String example = "aab";
-        Graph g = GenerateGraph.generateGraph(enumerator, example, 0, example.length());
+        String example1 = "aab";
+        Graph g1 = GenerateGraph.generateGraph(enumerator, example1, 0, example1.length());
 
-        List<String> possible = g.listPossibleRegExpr();
+        List<String> possible1 = g1.listPossibleRegExpr();
 
-        for (String regEx : possible) {
+        for (String regEx : possible1) {
             System.out.println(regEx);
         }
+
+
+        System.out.println("--------");
+
+        enumerator.reset();
+        String example2 = "ab";
+        Graph g2 = GenerateGraph.generateGraph(enumerator, example2, 0, example2.length());
+
+        List<String> possible2 = g2.listPossibleRegExpr();
+
+        for (String regEx : possible2) {
+            System.out.println(regEx);
+        }
+
+        System.out.println("--------");
+
+        g1.intersection(g2);
 
     }
 }
