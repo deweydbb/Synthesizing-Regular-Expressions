@@ -1,5 +1,7 @@
 package utils;
 
+import lombok.Getter;
+
 /**
  * Represents a set of characters to match. Can include a quantifier
  */
@@ -7,6 +9,7 @@ public class CharClass {
 
     private final String representation;
     private final CharSet charSet;
+    @Getter
     private final Quantifier quantifier;
 
     public CharClass(String characters) {
@@ -45,10 +48,6 @@ public class CharClass {
 
     public CharClass withQuantifier(Quantifier quantifier) {
         return new CharClass(this, quantifier);
-    }
-
-    public boolean hasQuantifier(Quantifier quantifier) {
-        return quantifier != null;
     }
 
     @Override

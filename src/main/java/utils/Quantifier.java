@@ -1,5 +1,7 @@
 package utils;
 
+import java.awt.desktop.QuitEvent;
+
 /**
  * Lists the types of quantifiers for character classes
  */
@@ -24,6 +26,10 @@ public enum Quantifier {
         };
 
         return "";
+    }
+
+    public static boolean optional(Quantifier q) {
+        return q == STAR || q == QUESTION;
     }
 
 }
