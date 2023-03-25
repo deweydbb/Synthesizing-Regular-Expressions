@@ -217,6 +217,52 @@ public class Graph {
         return new Graph(input, numNodes);
     }
 
+    // intersects a graph with a negative example and modifies edges that appear on a path from the start
+    // to end in their intersection. See heuristic below
+    public void subtract(Graph negGraph) {
+        Map<SimpleKey, Map<SimpleKey, Set<CharClass>>> startToEnd = new HashMap<>();
+        Map<SimpleKey, Map<SimpleKey, Set<CharClass>>> endToStart = new HashMap<>();
+
+        // produce a cartesian product of all edges
+        for (SimpleKey key1 : map.keySet()) {
+            for (SimpleKey key2 : negGraph.map.keySet()) {
+                CombinedKey combinedKey = new CombinedKey(key1, key2);
+                if (combinedKey.isValid()) {
+                    Set<CharClass> intersection = edgeIntersection(map.get(key1), negGraph.map.get(key2));
+
+                    insertEdges(startToEnd, endToStart, combinedKey, intersection);
+                }
+            }
+        }
+
+        SimpleKey source = new SimpleKey(0, 0);
+        SimpleKey target = new SimpleKey(numNodes - 1, negGraph.numNodes - 1);
+
+        // removes edges in the intermediate graph that do not exist along a path between the source and target
+        Map<CombinedKey, Set<CharClass>> result = removeUnnecessaryEdges(startToEnd, endToStart, source, target);
+
+        // modify edges in calling graph
+        for (CombinedKey key : result.keySet()) {
+            SimpleKey edgeKey = new SimpleKey(key.start.num1, key.end.num1);
+            SimpleKey negEdgeKey = new SimpleKey(key.start.num2, key.end.num2);
+
+            Set<CharClass> intersectionSet = result.get(key);
+            Set<CharClass> edgeSet = map.get(edgeKey);
+
+            System.out.println(edgeKey + " " + negEdgeKey+ " " + intersectionSet+ " " + edgeSet);
+
+            // TODO HEURISTIC
+            // remove unwanted qualifiers if exact number of repeated elements is needed
+            // do not remove an entire edge
+            if ((edgeKey.num2 - edgeKey.num1 > 1 && negEdgeKey.num2 - negEdgeKey.num1 > 1) || intersectionSet.size() != edgeSet.size()) {
+                edgeSet.removeAll(intersectionSet);
+                if (edgeSet.size() == 0) {
+                    map.remove(edgeKey);
+                }
+            }
+        }
+    }
+
     // is a key of two number
     // used in a regular graph to represent and edge from num1 to num2
     // used in the intermediate graph to represent a single node
