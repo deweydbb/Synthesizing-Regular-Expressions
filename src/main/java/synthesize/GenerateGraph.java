@@ -9,10 +9,13 @@ import java.util.regex.Pattern;
 public class GenerateGraph {
 
     // Given an example and an enumerator, generates a version space for the example
-    public static Graph generateGraph(Enumerator enumerator, String example, int start, int end) {
+    public static Graph generateGraph(Enumerator enumerator, Example ex) {
+        int start = ex.getStart();
+        int end = ex.getEnd();
+
         Graph g = new Graph(end - start);
 
-        String matchStr = example.substring(start, end);
+        String matchStr = ex.getMatchString();
         Matcher matcher = Pattern.compile("").matcher(matchStr);
 
         while (enumerator.hasNext()) {

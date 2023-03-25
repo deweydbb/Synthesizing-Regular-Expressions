@@ -21,6 +21,10 @@ public class Graph {
         this.numNodes = numNodes;
     }
 
+    public int numEdges() {
+        return map.size();
+    }
+
     // inserts a character class along a specific edge. The character class matches the example between start and end
     public void insert(int start, int end, CharClass c) {
         SimpleKey key = new SimpleKey(start, end);
@@ -123,6 +127,7 @@ public class Graph {
     }
 
     // performs a breadth first search traversal, returns a map that contains all the visited edges during the traversal
+    // helper method for removing unnecessary edges from the graph
     private static Map<CombinedKey, Set<CharClass>> pathTraversal(Map<SimpleKey, Map<SimpleKey, Set<CharClass>>> startToEnd,
                                       SimpleKey source, boolean forward) {
 
@@ -202,12 +207,6 @@ public class Graph {
 
         return new Graph(input, numNodes);
     }
-
-    /**
-     * TODO: Graph intersection:
-     *      charClass intersection needs to account for * and ? better
-     *
-     */
 
     // is a key of two number
     // used in a regular graph to represent and edge from num1 to num2

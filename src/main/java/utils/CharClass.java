@@ -2,6 +2,9 @@ package utils;
 
 import lombok.Getter;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * Represents a set of characters to match. Can include a quantifier
  */
@@ -53,5 +56,10 @@ public class CharClass {
     @Override
     public String toString() {
         return "[" + representation + "]" + Quantifier.representation(quantifier);
+    }
+
+
+    public static Set<CharClass> getOptionalClasses(Set<CharClass> s) {
+        return s.stream().filter(c -> Quantifier.optional(c.getQuantifier())).collect(Collectors.toSet());
     }
 }
