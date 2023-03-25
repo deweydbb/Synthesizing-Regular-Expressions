@@ -1,5 +1,9 @@
 package synthesize;
 
+import regex.CharMatch;
+import regex.Concat;
+import regex.Operator;
+import regex.Quantifier;
 import utils.CharClass;
 
 import java.util.*;
@@ -39,10 +43,12 @@ public class Graph {
     }
 
     // helper method for listing all possible regular expressions
-    private void listPossibleHelp(int start, StringBuilder partial, List<String> result) {
+    private void listPossibleHelp(int start, List<Operator> partial, List<Operator> results) {
         // base case, reach last node, partial contains a complete regex.
         if (start == numNodes - 1) {
-            result.add(partial.toString());
+            Operator concat = new Concat(new ArrayList<>(partial));
+            results.add(concat);
+            return;
         }
 
         // loop through all possible edges from the current node
@@ -54,24 +60,27 @@ public class Graph {
             if (possible != null) {
                 // loop through all different character classes that match the current edge
                 for (CharClass c : possible) {
-                    String cStr = c.toString();
-                    partial.append(cStr);
+                    Operator match = new CharMatch(c.getCharSet(), c.getRepresentation());
+                    if (c.getQuantifier() != null) {
+                        // nest char match set in quantifier
+                        match = new Quantifier(c.getQuantifier(), match);
+                    }
+                    partial.add(match);
 
-                    listPossibleHelp(end, partial, result);
+                    listPossibleHelp(end, partial, results);
 
-                    // back track, remove current char class from partial regex in order to try other classes
-                    int partialSize = partial.length();
-                    partial.delete(partialSize - cStr.length(), partialSize);
+                    // back track, remove last operator so new one can be added
+                    partial.remove(partial.size() - 1);
                 }
             }
         }
     }
 
     // returns a list of all possible regular expressions in the version space
-    public List<String> listPossibleRegExpr() {
-        List<String> result = new ArrayList<>();
+    public List<Operator> listPossibleRegExpr() {
+        List<Operator> result = new ArrayList<>();
 
-        listPossibleHelp(0, new StringBuilder(), result);
+        listPossibleHelp(0, new ArrayList<>(), result);
 
         return result;
     }

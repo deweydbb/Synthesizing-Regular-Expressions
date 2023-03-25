@@ -1,5 +1,6 @@
 package org.example;
 
+import regex.Operator;
 import synthesize.Example;
 import synthesize.GenerateGraph;
 import synthesize.Graph;
@@ -53,12 +54,12 @@ public class Main {
 
 
         for (Graph graph : graphs) {
-            List<String> res = graph.listPossibleRegExpr();
+            List<Operator> res = graph.listPossibleRegExpr();
             System.out.println(res.size() + " regular expressions found");
 
-            for (String regEx : res) {
+            for (Operator regEx : res) {
 
-                System.out.println(regEx);
+                System.out.println(regEx.toString());
             }
             System.out.println("-------------------------");
         }

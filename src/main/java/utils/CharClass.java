@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
  */
 public class CharClass {
 
+    @Getter
     private final String representation;
+    @Getter
     private final CharSet charSet;
     @Getter
     private final QuantifierType quantifier;
