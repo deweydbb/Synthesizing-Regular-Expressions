@@ -13,7 +13,7 @@ public class CharClass {
     private final String representation;
     private final CharSet charSet;
     @Getter
-    private final Quantifier quantifier;
+    private final QuantifierType quantifier;
 
     public CharClass(String characters) {
         this.representation = characters;
@@ -29,7 +29,7 @@ public class CharClass {
     }
 
     // shallow copy okay sense class is immutable
-    private CharClass(CharClass c, Quantifier quantifier) {
+    private CharClass(CharClass c, QuantifierType quantifier) {
         this.representation = c.representation;
         this.charSet = c.charSet.copy();
         this.quantifier = quantifier;
@@ -49,17 +49,17 @@ public class CharClass {
         return charSet.hashCode();
     }
 
-    public CharClass withQuantifier(Quantifier quantifier) {
+    public CharClass withQuantifier(QuantifierType quantifier) {
         return new CharClass(this, quantifier);
     }
 
     @Override
     public String toString() {
-        return "[" + representation + "]" + Quantifier.representation(quantifier);
+        return "[" + representation + "]" + QuantifierType.representation(quantifier);
     }
 
 
     public static Set<CharClass> getOptionalClasses(Set<CharClass> s) {
-        return s.stream().filter(c -> Quantifier.optional(c.getQuantifier())).collect(Collectors.toSet());
+        return s.stream().filter(c -> QuantifierType.optional(c.getQuantifier())).collect(Collectors.toSet());
     }
 }

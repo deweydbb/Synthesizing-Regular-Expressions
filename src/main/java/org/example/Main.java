@@ -4,13 +4,10 @@ import synthesize.Example;
 import synthesize.GenerateGraph;
 import synthesize.Graph;
 import utils.Enumerator;
-import utils.Quantifier;
+import utils.QuantifierType;
 
-import java.net.Inet4Address;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * TODO:
@@ -19,7 +16,6 @@ import java.util.Set;
  *          Have enumeration include negation of classes
  *          Have enumeration combine classes
  *          Have enumeration perform observed equivalency
- *      Create class for examples
  *      Create class for partitioning
  *      Create class to merge expressions that cannot be combined
  */
@@ -29,7 +25,7 @@ public class Main {
 
         long start = System.currentTimeMillis();
 
-        String[] matches = {"a", "aa", "aab", "aaabb"};
+        String[] matches = {"a", "aa", "aab", "aaabb", "abbbaaa"};
 
         List<Example> examples = new ArrayList<>();
 
@@ -37,7 +33,7 @@ public class Main {
             examples.add(new Example(s));
         }
 
-        Enumerator enumerator = new Enumerator(List.of(Quantifier.PLUS));
+        Enumerator enumerator = new Enumerator(List.of(QuantifierType.PLUS));
 
         List<Graph> graphs = new ArrayList<>();
 
@@ -69,6 +65,7 @@ public class Main {
 
     }
 
+    // greedily combines graphs until no more graphs can be combined
     public static List<Graph> combineGraphs(List<Graph> current) {
         List<Graph> next = current;
         int numCombined;

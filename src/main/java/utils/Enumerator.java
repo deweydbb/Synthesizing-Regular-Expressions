@@ -13,11 +13,11 @@ public class Enumerator implements Iterator<CharClass> {
     private static final List<String> baseCharClasses = List.of("a", "b", "c", "d");
 
     private final List<CharClass> currentCharClasses;
-    private final List<Quantifier> quantifiers;
+    private final List<QuantifierType> quantifiers;
     private CharClass currentClass;
     private int quantifierIndex;
 
-    public Enumerator(List<Quantifier> quantifiers) {
+    public Enumerator(List<QuantifierType> quantifiers) {
         this.currentCharClasses = new LinkedList<>();
         this.quantifiers = quantifiers;
 
