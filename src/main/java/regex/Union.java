@@ -32,6 +32,10 @@ public class Union implements Operator {
 
     @Override
     public StringBuilder getRepresentation() {
+        if (operators.size() == 1) {
+            return operators.get(0).getRepresentation();
+        }
+
         StringBuilder res = new StringBuilder("(");
 
         res.append(operators.get(0).getRepresentation());

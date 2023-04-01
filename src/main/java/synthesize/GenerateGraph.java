@@ -3,6 +3,8 @@ package synthesize;
 import utils.CharClass;
 import utils.Enumerator;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,4 +40,19 @@ public class GenerateGraph {
         return g;
     }
 
+    public static List<Graph> createGraphs(List<Example> examples, Enumerator enumerator) {
+        List<Graph> graphs = new ArrayList<>();
+
+        for (Example ex : examples) {
+            Graph g = GenerateGraph.generateGraph(enumerator, ex);
+
+            assert g.numEdges() > 0;
+
+            graphs.add(g);
+
+            enumerator.reset();
+        }
+
+        return graphs;
+    }
 }

@@ -29,5 +29,4 @@ public enum QuantifierType {
     public static boolean optional(QuantifierType q) {
         return q == STAR || q == QUESTION;
     }
-
 }

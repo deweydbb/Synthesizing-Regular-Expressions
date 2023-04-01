@@ -249,7 +249,7 @@ public class Graph {
             Set<CharClass> intersectionSet = result.get(key);
             Set<CharClass> edgeSet = map.get(edgeKey);
 
-            System.out.println(edgeKey + " " + negEdgeKey+ " " + intersectionSet+ " " + edgeSet);
+            // System.out.println(edgeKey + " " + negEdgeKey+ " " + intersectionSet+ " " + edgeSet);
 
             // TODO HEURISTIC
             // remove unwanted qualifiers if exact number of repeated elements is needed

@@ -9,6 +9,7 @@ public class Quantifier implements Operator {
 
     @Getter
     private final QuantifierType type;
+    @Getter
     private final Operator op;
 
     @Override
