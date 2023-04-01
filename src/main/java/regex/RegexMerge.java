@@ -48,7 +48,7 @@ public class RegexMerge {
         } else if (range2 > 0 && range1 == 0) {
             return combineSingle(op2);
         } else {
-            //TODO call createUnionOfRegexs here instead of simple union
+            //TODO call createUnionOfRegexs here instead of simple union???
             return new Union(List.of(
                     new Concat(op1),
                     new Concat(op2)
@@ -56,6 +56,33 @@ public class RegexMerge {
         }
     }
 
+    // used to combine two regular expressions when one is a complete prefix or suffix of the other
+    private static Operator combineFullMatch(Concat c1, Concat c2, int numShareStart, int numShareEnd) {
+        int size1 = c1.getOperators().size();
+        int size2 = c2.getOperators().size();
+
+        if (numShareStart == size1 || numShareEnd == size1) {
+            // full match of c1
+            List<Operator> newOperators;
+            if (numShareStart == size1) {
+                // c1 is a prefix of c2
+                newOperators = new ArrayList<>(c1.getOperators());
+                Operator shared = combineRange(c1, 0, 0, c2, numShareStart, size2);
+                newOperators.add(shared);
+            } else {
+                // c1 is a suffix of c2
+                newOperators = new ArrayList<>();
+                Operator shared = combineRange(c1, 0, 0, c2, 0, size2 - numShareEnd);
+                newOperators.add(shared);
+                newOperators.addAll(c1.getOperators());
+            }
+
+            return new Concat(newOperators);
+        } else {
+            // flip c1 and c2 in order to not have to duplicate the logic above
+            return combineFullMatch(c2, c1, numShareStart, numShareEnd);
+        }
+    }
 
     // returns the number of elements the regex r1 and r2 have in common
     // starting from index 0 until they are no longer equal
@@ -100,25 +127,6 @@ public class RegexMerge {
         return result;
     }
 
-
-    // checks to see if r1 and r2 have the same start. If they do, combine them and return the
-    // new combined regex. Else return null
-//    private static Operator checkShareStart(Operator r1, Operator r2) {
-//        int numShareStart = shareStart(r1, r2);
-//
-//        if (numShareStart > 0 && r1 instanceof Concat c1 && r2 instanceof  Concat c2) {
-//            Operator shared = combineRange(c1, numShareStart, c1.getOperators().size(),
-//                    c2, numShareStart, c2.getOperators().size());
-//
-//            List<Operator> newOps = new ArrayList<>(c1.getOperators().subList(0, numShareStart));
-//            newOps.add(shared);
-//            return new Concat(newOps);
-//        }
-//
-//        return null;
-//    }
-
-
     private static Operator createUnionOfRegexs(List<Operator> regexs) {
         for (int i = 0; i < regexs.size(); i++) {
             Operator r1 = regexs.get(i);
@@ -129,17 +137,17 @@ public class RegexMerge {
                     int numShareStart = shareStart(c1, c2);
                     int numShareEnd = shareEnd(c1, c2);
 
-                    System.out.printf("start share: %d, end share: %d, between %s and %s\n", numShareStart, numShareEnd, c1, c2);
-
                     if (numShareStart > 0 || numShareEnd > 0) {
 
-                        int end1 = c1.getOperators().size() - numShareEnd;
-                        int end2 = c2.getOperators().size() - numShareEnd;
-
-                        // TODO what if this is not true?
-                        if (end1 >= numShareStart && end2 >= numShareStart) {
-
-                            System.out.printf("[%d, %d] and [%d, %d]\n", numShareStart, end1, numShareStart, end2);
+                        int size1 = c1.getOperators().size();
+                        int size2 = c2.getOperators().size();
+                        int end1 = size1 - numShareEnd;
+                        int end2 = size2 - numShareEnd;
+                        // check to see if one is a complete prefix/suffix of the other regex
+                        if (end1 == 0 || end2 == 0 || numShareStart == size1 || numShareStart == size2) {
+                            r1 = combineFullMatch(c1, c2, numShareStart, numShareEnd);
+                        } else {
+                            assert end1 >= numShareStart && end2 >= numShareStart && (end1 > numShareStart || end2 > numShareStart);
 
                             Operator shared = combineRange(c1, numShareStart, end1,
                                     c2, numShareStart, end2);
@@ -150,15 +158,15 @@ public class RegexMerge {
                             }
                             newRegex.add(shared);
                             if (numShareEnd > 0) {
-                                newRegex.addAll(c1.getOperators().subList(end1, end1 + numShareEnd));
+                                newRegex.addAll(c1.getOperators().subList(end1, size1));
                             }
 
                             r1 = new Concat(newRegex);
 
-                            System.out.println("new regex: " + r1);
-                            regexs.set(i, r1);
-                            regexs.remove(j);
                         }
+
+                        regexs.set(i, r1);
+                        regexs.remove(j);
                     }
                 }
             }

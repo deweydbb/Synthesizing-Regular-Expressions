@@ -27,8 +27,8 @@ public class Main {
 
         long start = System.currentTimeMillis();
 
-        String[] matches = {"aa", "a", "bbaab", "bab"};
-        String[] negative = {"bbbbbab"};
+        String[] matches = {"aa", "a", "bbab", "bab"};
+        String[] negative = {"bbbbab"};
 
         List<Example> examples = Example.createExamples(matches, false);
         List<Example> negExamples = Example.createExamples(negative, true);
