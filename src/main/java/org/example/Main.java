@@ -2,12 +2,10 @@ package org.example;
 
 import regex.Operator;
 import regex.RegexMerge;
-import regex.Union;
 import synthesize.Example;
 import synthesize.GenerateGraph;
 import synthesize.Graph;
 import utils.Enumerator;
-import utils.QuantifierType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +16,6 @@ import java.util.List;
  *          Have enumeration include negation of classes
  *          Have enumeration combine classes
  *          Have enumeration perform observed equivalency
- *      Create class to merge expressions that cannot be combined via graphs
  *      Rank Results
  */
 
@@ -27,13 +24,13 @@ public class Main {
 
         long start = System.currentTimeMillis();
 
-        String[] matches = {"aa", "a", "bbab", "bab"};
-        String[] negative = {"bbbbab"};
+        String[] matches = {"aabbaa", "aba", "abc", "aabbcc"};
+        String[] negative = {};
 
         List<Example> examples = Example.createExamples(matches, false);
         List<Example> negExamples = Example.createExamples(negative, true);
 
-        Enumerator enumerator = new Enumerator(List.of(QuantifierType.PLUS));
+        Enumerator enumerator = new Enumerator(matches, negative);
 
         List<Graph> graphs = GenerateGraph.createGraphs(examples, enumerator);
         List<Graph> negGraphs = GenerateGraph.createGraphs(negExamples, enumerator);
@@ -43,6 +40,12 @@ public class Main {
             for (Graph negGraph : negGraphs) {
                 graph.subtract(negGraph);
             }
+
+//            List<Operator> test = graph.listPossibleRegExpr();
+//            System.out.println("Found " + test.size());
+//            for (Operator t : test) {
+//                System.out.println("\t" + t);
+//            }
         }
 
         graphs = combineGraphs(graphs);

@@ -59,6 +59,13 @@ public class CharSet {
         }
     }
 
+    public CharSet inverse() {
+        long i1 = ~s1;
+        long i2 = ~s2;
+
+        return new CharSet(i1, i2);
+    }
+
     public CharSet copy() {
         return new CharSet(s1, s2);
     }

@@ -60,7 +60,7 @@ public class Graph {
             if (possible != null) {
                 // loop through all different character classes that match the current edge
                 for (CharClass c : possible) {
-                    Operator match = new CharMatch(c.getCharSet(), c.getRepresentation());
+                    Operator match = new CharMatch(c.getRepresentation());
                     if (c.getQuantifier() != null) {
                         // nest char match set in quantifier
                         match = new Quantifier(c.getQuantifier(), match);

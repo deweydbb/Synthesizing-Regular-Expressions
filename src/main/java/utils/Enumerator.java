@@ -1,8 +1,6 @@
 package utils;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -10,53 +8,54 @@ import java.util.List;
  */
 public class Enumerator implements Iterator<CharClass> {
 
-    private static final List<String> baseCharClasses = List.of("a", "b", "c", "d");
+    private final List<CharClass> charClasses;
 
-    private final List<CharClass> currentCharClasses;
-    private final List<QuantifierType> quantifiers;
-    private CharClass currentClass;
-    private int quantifierIndex;
+    private int index;
+    private int modifierIndex;
 
-    public Enumerator(List<QuantifierType> quantifiers) {
-        this.currentCharClasses = new LinkedList<>();
-        this.quantifiers = quantifiers;
+    public Enumerator(String[] matches, String[] negative) {
+        Set<Character> allCharacters = new HashSet<>();
+        for (String s : matches) {
+            for (char c : s.toCharArray()) {
+                allCharacters.add(c);
+            }
+        }
 
-        reset();
+        for (String s : negative) {
+            for (char c : s.toCharArray()) {
+                allCharacters.add(c);
+            }
+        }
+
+        charClasses = new ArrayList<>();
+
+        for (Character c : allCharacters) {
+            CharClass cClass = new CharClass(c + "");
+            charClasses.add(cClass);
+//            CharClass negation = cClass.withNegation();
+//            charClasses.add(negation);
+        }
     }
 
     public void reset() {
-        currentCharClasses.clear();
-        for (String chars : baseCharClasses) {
-            currentCharClasses.add(new CharClass(chars));
-        }
-
-        currentClass = currentCharClasses.remove(0);
-        quantifierIndex = -1;
+        index = 0;
     }
 
     @Override
     public boolean hasNext() {
-        return currentCharClasses.size() > 0 || currentClass != null;
+        return index < charClasses.size();
     }
 
     /**
      * returns the next character class
      */
     public CharClass next() {
-        assert currentClass != null;
-
-        if (quantifierIndex == -1) {
-            quantifierIndex++;
-            return currentClass;
+        if (modifierIndex == 0) {
+            modifierIndex++;
+            return charClasses.get(index);
+        } else {
+            modifierIndex = 0;
+            return charClasses.get(index++).withQuantifier(QuantifierType.PLUS);
         }
-
-        CharClass returnVal = currentClass.withQuantifier(quantifiers.get(quantifierIndex++));
-
-        if (quantifierIndex == quantifiers.size()) {
-            currentClass = currentCharClasses.size() > 0 ? currentCharClasses.remove(0) : null;
-            quantifierIndex = -1;
-        }
-
-        return returnVal;
     }
 }

@@ -1,18 +1,16 @@
 package regex;
 
 import lombok.AllArgsConstructor;
-import utils.CharSet;
 
 @AllArgsConstructor
 public class CharMatch implements Operator {
 
-    private final CharSet set;
     private final String representation;
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof CharMatch other) {
-            return set.equals(other.set);
+            return representation.equals(other.representation);
         }
 
         return false;

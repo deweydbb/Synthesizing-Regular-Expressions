@@ -13,34 +13,28 @@ public class CharClass {
     @Getter
     private final String representation;
     @Getter
-    private final CharSet charSet;
-    @Getter
     private final QuantifierType quantifier;
 
     public CharClass(String characters) {
         this.representation = characters;
         this.quantifier = null;
-
-        charSet = new CharSet();
-
-        for (int i = 0; i < characters.length(); i++) {
-            char c = characters.charAt(i);
-
-            charSet.addChar(c);
-        }
     }
 
     // shallow copy okay sense class is immutable
     private CharClass(CharClass c, QuantifierType quantifier) {
         this.representation = c.representation;
-        this.charSet = c.charSet.copy();
         this.quantifier = quantifier;
+    }
+
+    private CharClass(CharClass c) {
+        this.representation = "^" + c.representation;
+        this.quantifier = null;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof CharClass other) {
-            return charSet.equals(other.charSet) && quantifier == other.quantifier;
+            return representation.equals(other.representation) && quantifier == other.quantifier;
         }
 
         return false;
@@ -48,11 +42,15 @@ public class CharClass {
 
     @Override
     public int hashCode() {
-        return charSet.hashCode();
+        return representation.hashCode();
     }
 
     public CharClass withQuantifier(QuantifierType quantifier) {
         return new CharClass(this, quantifier);
+    }
+
+    public CharClass withNegation() {
+        return new CharClass(this);
     }
 
     @Override
