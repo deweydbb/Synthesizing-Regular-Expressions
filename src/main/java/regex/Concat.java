@@ -42,6 +42,17 @@ public class Concat implements Operator {
     }
 
     @Override
+    public long rank() {
+        long res = 0;
+
+        for (Operator op : operators) {
+            res += op.rank();
+        }
+
+        return res;
+    }
+
+    @Override
     public String toString() {
         return getRepresentation().toString();
     }

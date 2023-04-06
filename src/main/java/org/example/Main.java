@@ -2,17 +2,21 @@ package org.example;
 
 import regex.Operator;
 import regex.RegexMerge;
+import regex.Union;
 import synthesize.Example;
 import synthesize.GenerateGraph;
 import synthesize.Graph;
 import utils.Enumerator;
+import utils.Specification;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * TODO:
  *      Have a union of single characters (or all with question qualifier) be combined into a character class
+ *      Have multiple sets of examples combined into one regular expression
  *      Rank Results
  */
 
@@ -21,13 +25,14 @@ public class Main {
 
         long start = System.currentTimeMillis();
 
-        String[] matches = {"000 0000", "111 1111", "000.0000", "111.1111"};
-        String[] negative = {"11  11", "aaa aaaa", "11..11", "aaa.aaaa"};
+        List<Specification> specs = Specification.readInSpec("./examples/test.txt");
 
-        List<Example> examples = Example.createExamples(matches, false);
-        List<Example> negExamples = Example.createExamples(negative, true);
+        Specification spec = specs.get(0);
 
-        Enumerator enumerator = new Enumerator(matches, negative);
+        List<Example> examples = Example.createExamples(spec.getMatching(), false);
+        List<Example> negExamples = Example.createExamples(spec.getNegative(), true);
+
+        Enumerator enumerator = new Enumerator(spec);
 
         List<Graph> graphs = GenerateGraph.createGraphs(examples, enumerator);
         List<Graph> negGraphs = GenerateGraph.createGraphs(negExamples, enumerator);
@@ -37,12 +42,6 @@ public class Main {
             for (Graph negGraph : negGraphs) {
                 graph.subtract(negGraph);
             }
-
-//            List<Operator> test = graph.listPossibleRegExpr();
-//            System.out.println("Found " + test.size());
-//            for (Operator t : test) {
-//                System.out.println("\t" + t);
-//            }
         }
 
         graphs = combineGraphs(graphs);
@@ -59,13 +58,14 @@ public class Main {
         }
 
         List<Operator> res = RegexMerge.forceMerge(graphs);
+        Collections.sort(res); // sorts regular expressions with best being first
 
         long finish = System.currentTimeMillis();
         long timeElapsed = finish - start;
 
-        System.out.println("Time elapsed: " + timeElapsed + " milliseconds");
-
         printRegularExpressions(res, examples, negExamples);
+
+        System.out.println("Time elapsed: " + timeElapsed + " milliseconds");
     }
 
     // greedily combines graphs until no more graphs can be combined
@@ -121,22 +121,31 @@ public class Main {
     private static void printRegularExpressions(List<Operator> res, List<Example> examples, List<Example> negExamples) {
         System.out.println(res.size() + " regular expressions found");
 
-        for (Operator regEx : res) {
-            String r = regEx.toString();
-            System.out.println(r);
-
+        for (int i = res.size() - 1; i >= 0; i--) {
+            Operator regEx = res.get(i);
             for (Example ex : examples) {
-                if (!ex.check(r)) {
-                    System.out.println("\t" + r + " failed on example: " + ex);
+                if (!ex.check(regEx)) {
+                    if (regEx instanceof Union unionRegex) {
+                        // often the ordering matters and can lead to failure so try reversing the union and seeing
+                        // if it that fixed it.
+                        Collections.reverse(unionRegex.getOperators());
+                        if (!ex.check(regEx)) {
+                            System.out.println("\t" + regEx + " failed on example: " + ex);
+                        }
+                    }
                 }
             }
 
             for (Example ex : negExamples) {
-                if (ex.check(r)) {
-                    System.out.println("\t" + r + " failed on negative example: " + ex);
+                if (ex.check(regEx)) {
+                    System.out.println("\t" + regEx + " failed on negative example: " + ex);
                 }
             }
+
+            System.out.println(regEx);
         }
+
+        System.out.println(res.size() + " regular expressions found");
         System.out.println("-------------------------");
     }
 

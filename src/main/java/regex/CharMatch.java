@@ -27,6 +27,15 @@ public class CharMatch implements Operator {
     }
 
     @Override
+    public long rank() {
+        if (representation.charAt(0) == '^') {
+            return 128 - representation.length() + 1;
+        }
+
+        return representation.length();
+    }
+
+    @Override
     public String toString() {
         return getRepresentation().toString();
     }

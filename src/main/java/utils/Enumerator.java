@@ -13,15 +13,15 @@ public class Enumerator implements Iterator<CharClass> {
     private int index;
     private int modifierIndex;
 
-    public Enumerator(String[] matches, String[] negative) {
+    public Enumerator(Specification spec) {
         Set<Character> allCharacters = new HashSet<>();
-        for (String s : matches) {
+        for (String s : spec.getMatching()) {
             for (char c : s.toCharArray()) {
                 allCharacters.add(c);
             }
         }
 
-        for (String s : negative) {
+        for (String s : spec.getNegative()) {
             for (char c : s.toCharArray()) {
                 allCharacters.add(c);
             }
@@ -32,11 +32,10 @@ public class Enumerator implements Iterator<CharClass> {
         for (Character c : allCharacters) {
             CharClass cClass = new CharClass(c + "");
             charClasses.add(cClass);
-//            CharClass negation = cClass.withNegation();
-//            charClasses.add(negation);
         }
 
-        String[] base = {"a-z", "A-Z", "a-zA-Z", "0-9", "a-zA-Z0-9", "\\s"};
+        List<String> base = new ArrayList<>(List.of("a-z", "A-Z", "a-zA-Z", "0-9", "a-zA-Z0-9", "\\s"));
+        base.addAll(spec.getExtraCharClasses());
 
         for (String representation : base) {
             charClasses.add(new CharClass(representation));

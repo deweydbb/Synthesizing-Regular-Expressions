@@ -32,6 +32,11 @@ public class Quantifier implements Operator {
     }
 
     @Override
+    public long rank() {
+        return op.rank();
+    }
+
+    @Override
     public String toString() {
         return getRepresentation().toString();
     }

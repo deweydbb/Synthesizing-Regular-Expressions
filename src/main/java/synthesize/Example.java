@@ -1,8 +1,10 @@
 package synthesize;
 
 import lombok.Getter;
+import regex.Operator;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,8 +29,8 @@ public class Example {
         this.end = ex.length();
     }
 
-    public boolean check(String regex) {
-        Matcher matcher = Pattern.compile(regex).matcher(ex);
+    public boolean check(Operator regex) {
+        Matcher matcher = Pattern.compile(regex.toString()).matcher(ex);
 
         if (matcher.find()) {
             return matcher.start() == 0 && matcher.end() == ex.length();
@@ -47,7 +49,7 @@ public class Example {
         return ex;
     }
 
-    public static ArrayList<Example> createExamples(String[] strings, boolean negative) {
+    public static ArrayList<Example> createExamples(List<String> strings, boolean negative) {
         ArrayList<Example> res = new ArrayList<>();
         for (String s : strings) {
             res.add(new Example(s, negative));
