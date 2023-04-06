@@ -12,10 +12,7 @@ import java.util.List;
 
 /**
  * TODO:
- *      Enumeration:
- *          Have enumeration include negation of classes
- *          Have enumeration combine classes
- *          Have enumeration perform observed equivalency
+ *      Have a union of single characters (or all with question qualifier) be combined into a character class
  *      Rank Results
  */
 
@@ -24,8 +21,8 @@ public class Main {
 
         long start = System.currentTimeMillis();
 
-        String[] matches = {"aabbaa", "aba", "abc", "aabbcc"};
-        String[] negative = {};
+        String[] matches = {"000 0000", "111 1111", "000.0000", "111.1111"};
+        String[] negative = {"11  11", "aaa aaaa", "11..11", "aaa.aaaa"};
 
         List<Example> examples = Example.createExamples(matches, false);
         List<Example> negExamples = Example.createExamples(negative, true);

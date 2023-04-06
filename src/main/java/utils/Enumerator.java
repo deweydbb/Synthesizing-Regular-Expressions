@@ -35,6 +35,12 @@ public class Enumerator implements Iterator<CharClass> {
 //            CharClass negation = cClass.withNegation();
 //            charClasses.add(negation);
         }
+
+        String[] base = {"a-z", "A-Z", "a-zA-Z", "0-9", "a-zA-Z0-9", "\\s"};
+
+        for (String representation : base) {
+            charClasses.add(new CharClass(representation));
+        }
     }
 
     public void reset() {
