@@ -62,6 +62,11 @@ public class Graph {
                 for (CharClass c : possible) {
                     Operator match = new CharMatch(c.getRepresentation());
                     if (c.getQuantifier() != null) {
+
+                        if (possible.contains(c.withoutQuantifier())) {
+                            continue; // do not use + quantifier if the edge contains the same class without the quantifier
+                        }
+
                         // nest char match set in quantifier
                         match = new Quantifier(c.getQuantifier(), match);
                     }

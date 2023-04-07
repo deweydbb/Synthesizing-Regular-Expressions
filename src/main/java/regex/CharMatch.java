@@ -19,11 +19,12 @@ public class CharMatch implements Operator {
     @Override
     public StringBuilder getRepresentation() {
         StringBuilder res = new StringBuilder();
-        if (representation.length() > 1) {
-            return res.append('[').append(representation).append(']');
+
+        if (representation.length() == 1 || (representation.length() == 2 && representation.charAt(0) == '\\')) {
+            return res.append(representation);
         }
 
-        return res.append(representation);
+        return res.append('[').append(representation).append(']');
     }
 
     @Override

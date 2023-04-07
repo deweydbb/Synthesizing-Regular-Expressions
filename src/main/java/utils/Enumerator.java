@@ -30,8 +30,8 @@ public class Enumerator implements Iterator<CharClass> {
         charClasses = new ArrayList<>();
 
         for (Character c : allCharacters) {
-            CharClass cClass = new CharClass(c + "");
-            charClasses.add(cClass);
+            String special = isSpecial(c) ? "\\" : "";
+            charClasses.add(new CharClass(special + c));
         }
 
         List<String> base = new ArrayList<>(List.of("a-z", "A-Z", "a-zA-Z", "0-9", "a-zA-Z0-9", "\\s"));
@@ -62,5 +62,11 @@ public class Enumerator implements Iterator<CharClass> {
             modifierIndex = 0;
             return charClasses.get(index++).withQuantifier(QuantifierType.PLUS);
         }
+    }
+
+    private static boolean isSpecial(char c) {
+        final Set<Character> special = Set.of('.', ',', '*', '?', '^', '$', '(', ')', '[', ']', '{', '}', '|', '\\');
+
+        return special.contains(c);
     }
 }

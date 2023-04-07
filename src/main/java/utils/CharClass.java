@@ -49,6 +49,10 @@ public class CharClass {
         return new CharClass(this, quantifier);
     }
 
+    public CharClass withoutQuantifier() {
+        return new CharClass(this, null);
+    }
+
     public CharClass withNegation() {
         return new CharClass(this);
     }

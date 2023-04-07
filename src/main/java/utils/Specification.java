@@ -30,7 +30,7 @@ public class Specification {
             line = sc.nextLine();
         }
 
-        System.out.println("Extra classes: " + res);
+        // System.out.println("Extra classes: " + res);
         return res;
     }
 
@@ -44,7 +44,7 @@ public class Specification {
             }
         }
 
-        System.out.println("Matching examples: " + res);
+        // System.out.println("Matching examples: " + res);
         return res;
     }
 
@@ -59,7 +59,7 @@ public class Specification {
             }
         }
 
-        System.out.println("Negative examples: " + res);
+        // System.out.println("Negative examples: " + res);
         return res;
     }
 

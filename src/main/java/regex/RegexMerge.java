@@ -214,4 +214,45 @@ public class RegexMerge {
 
         return result;
     }
+
+    private static Operator createConcat(List<Operator> partial) {
+        Concat concat = new Concat(new ArrayList<>());
+
+        for (Operator op : partial) {
+            if (op instanceof Concat concatOp) {
+                concat.getOperators().addAll(concatOp.getOperators());
+            } else {
+                concat.getOperators().add(op);
+            }
+        }
+
+        return concat;
+    }
+
+
+    private static void regexConcatHelp(int index, List<List<Operator>> regexs, List<Operator> partial, List<Operator> result) {
+        // base case
+        if (index == regexs.size()) {
+            result.add(createConcat(partial));
+            return;
+        }
+
+        List<Operator> regexSet = regexs.get(index);
+
+        for (Operator op : regexSet) {
+            partial.add(op);
+
+            regexConcatHelp(index + 1, regexs, partial, result);
+
+            partial.remove(partial.size() - 1);
+        }
+    }
+
+    public static List<Operator> regexConcat(List<List<Operator>> regexs) {
+        List<Operator> result = new ArrayList<>();
+
+        regexConcatHelp(0, regexs, new ArrayList<>(), result);
+
+        return result;
+    }
 }
