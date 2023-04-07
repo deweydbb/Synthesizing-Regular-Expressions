@@ -37,22 +37,26 @@ public class RegexMerge {
     // given two regexs, combine the given sub ranges by the union operator is both regions are non-empty
     // or if one of the ranges is empty, surround the non-empty subrange in an optional quantifier.
     private static Operator combineRange(Concat r1, int start1, int end1, Concat r2, int start2, int end2) {
-        List<Operator> op1 = new ArrayList<>(r1.getOperators().subList(start1, end1));
-        List<Operator> op2 = new ArrayList<>(r2.getOperators().subList(start2, end2));
+        try {
+            List<Operator> op1 = new ArrayList<>(r1.getOperators().subList(start1, end1));
+            List<Operator> op2 = new ArrayList<>(r2.getOperators().subList(start2, end2));
 
-        int range1 = op1.size();
-        int range2 = op2.size();
+            int range1 = op1.size();
+            int range2 = op2.size();
 
-        if (range1 > 0 && range2 == 0) {
-            return combineSingle(op1);
-        } else if (range2 > 0 && range1 == 0) {
-            return combineSingle(op2);
-        } else {
-            //TODO call createUnionOfRegexs here instead of simple union???
-            return new Union(List.of(
-                    new Concat(op1),
-                    new Concat(op2)
-            ));
+            if (range1 > 0 && range2 == 0) {
+                return combineSingle(op1);
+            } else if (range2 > 0 && range1 == 0) {
+                return combineSingle(op2);
+            } else {
+                //TODO call createUnionOfRegexs here instead of simple union???
+                return new Union(List.of(
+                        new Concat(op1),
+                        new Concat(op2)
+                ));
+            }
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("r1 = " + r1 + ", r2 = " + r2);
         }
     }
 
@@ -133,7 +137,7 @@ public class RegexMerge {
             for (int j = regexs.size() - 1; j > i; j--) {
                 Operator r2 = regexs.get(j);
 
-                if (r1 instanceof Concat c1 && r2 instanceof  Concat c2) {
+                if (r1.toString().equals(r2.toString()) && r1 instanceof Concat c1 && r2 instanceof  Concat c2) {
                     int numShareStart = shareStart(c1, c2);
                     int numShareEnd = shareEnd(c1, c2);
 

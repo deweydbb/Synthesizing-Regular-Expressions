@@ -65,7 +65,7 @@ public class Enumerator implements Iterator<CharClass> {
     }
 
     private static boolean isSpecial(char c) {
-        final Set<Character> special = Set.of('.', ',', '*', '?', '^', '$', '(', ')', '[', ']', '{', '}', '|', '\\');
+        final Set<Character> special = Set.of('.', ',', '+', '*', '?', '^', '$', '(', ')', '[', ']', '{', '}', '|', '\\');
 
         return special.contains(c);
     }

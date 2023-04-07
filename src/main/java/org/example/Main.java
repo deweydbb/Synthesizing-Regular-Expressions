@@ -9,7 +9,6 @@ import synthesize.Graph;
 import utils.Enumerator;
 import utils.Specification;
 
-import java.nio.file.OpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.List;
 /**
  * TODO:
  *      Have a union of single characters (or all with question qualifier) be combined into a character class
- *      Have multiple sets of examples combined into one regular expression
  */
 
 public class Main {
@@ -68,6 +66,7 @@ public class Main {
         graphs = combineGraphs(graphs);
 
         if (debug) {
+            System.out.println("number of uncombineable graphs: " + graphs.size());
             for (Graph graph : graphs) {
                 List<Operator> res = graph.listPossibleRegExpr();
                 printRegularExpressions(res);
@@ -79,7 +78,7 @@ public class Main {
         res = pruneRegexs(res, examples, negExamples);
 
         if (debug) {
-            printRegularExpressions(res);
+            // printRegularExpressions(res);
         }
 
         return res.subList(0, Math.min(30, res.size()));
