@@ -1,5 +1,9 @@
 package synthesize;
 
+import regex.CharMatch;
+import regex.Concat;
+import regex.Operator;
+import regex.Quantifier;
 import utils.CharClass;
 
 import java.util.*;
@@ -21,6 +25,10 @@ public class Graph {
         this.numNodes = numNodes;
     }
 
+    public int numEdges() {
+        return map.size();
+    }
+
     // inserts a character class along a specific edge. The character class matches the example between start and end
     public void insert(int start, int end, CharClass c) {
         SimpleKey key = new SimpleKey(start, end);
@@ -35,10 +43,12 @@ public class Graph {
     }
 
     // helper method for listing all possible regular expressions
-    private void listPossibleHelp(int start, StringBuilder partial, List<String> result) {
+    private void listPossibleHelp(int start, List<Operator> partial, List<Operator> results) {
         // base case, reach last node, partial contains a complete regex.
         if (start == numNodes - 1) {
-            result.add(partial.toString());
+            Operator concat = new Concat(new ArrayList<>(partial));
+            results.add(concat);
+            return;
         }
 
         // loop through all possible edges from the current node
@@ -50,24 +60,32 @@ public class Graph {
             if (possible != null) {
                 // loop through all different character classes that match the current edge
                 for (CharClass c : possible) {
-                    String cStr = c.toString();
-                    partial.append(cStr);
+                    Operator match = new CharMatch(c.getRepresentation());
+                    if (c.getQuantifier() != null) {
 
-                    listPossibleHelp(end, partial, result);
+                        if (possible.contains(c.withoutQuantifier())) {
+                            continue; // do not use + quantifier if the edge contains the same class without the quantifier
+                        }
 
-                    // back track, remove current char class from partial regex in order to try other classes
-                    int partialSize = partial.length();
-                    partial.delete(partialSize - cStr.length(), partialSize);
+                        // nest char match set in quantifier
+                        match = new Quantifier(c.getQuantifier(), match);
+                    }
+                    partial.add(match);
+
+                    listPossibleHelp(end, partial, results);
+
+                    // back track, remove last operator so new one can be added
+                    partial.remove(partial.size() - 1);
                 }
             }
         }
     }
 
     // returns a list of all possible regular expressions in the version space
-    public List<String> listPossibleRegExpr() {
-        List<String> result = new ArrayList<>();
+    public List<Operator> listPossibleRegExpr() {
+        List<Operator> result = new ArrayList<>();
 
-        listPossibleHelp(0, new StringBuilder(), result);
+        listPossibleHelp(0, new ArrayList<>(), result);
 
         return result;
     }
@@ -123,6 +141,7 @@ public class Graph {
     }
 
     // performs a breadth first search traversal, returns a map that contains all the visited edges during the traversal
+    // helper method for removing unnecessary edges from the graph
     private static Map<CombinedKey, Set<CharClass>> pathTraversal(Map<SimpleKey, Map<SimpleKey, Set<CharClass>>> startToEnd,
                                       SimpleKey source, boolean forward) {
 
@@ -203,11 +222,51 @@ public class Graph {
         return new Graph(input, numNodes);
     }
 
-    /**
-     * TODO: Graph intersection:
-     *      charClass intersection needs to account for * and ? better
-     *
-     */
+    // intersects a graph with a negative example and modifies edges that appear on a path from the start
+    // to end in their intersection. See heuristic below
+    public void subtract(Graph negGraph) {
+        Map<SimpleKey, Map<SimpleKey, Set<CharClass>>> startToEnd = new HashMap<>();
+        Map<SimpleKey, Map<SimpleKey, Set<CharClass>>> endToStart = new HashMap<>();
+
+        // produce a cartesian product of all edges
+        for (SimpleKey key1 : map.keySet()) {
+            for (SimpleKey key2 : negGraph.map.keySet()) {
+                CombinedKey combinedKey = new CombinedKey(key1, key2);
+                if (combinedKey.isValid()) {
+                    Set<CharClass> intersection = edgeIntersection(map.get(key1), negGraph.map.get(key2));
+
+                    insertEdges(startToEnd, endToStart, combinedKey, intersection);
+                }
+            }
+        }
+
+        SimpleKey source = new SimpleKey(0, 0);
+        SimpleKey target = new SimpleKey(numNodes - 1, negGraph.numNodes - 1);
+
+        // removes edges in the intermediate graph that do not exist along a path between the source and target
+        Map<CombinedKey, Set<CharClass>> result = removeUnnecessaryEdges(startToEnd, endToStart, source, target);
+
+        // modify edges in calling graph
+        for (CombinedKey key : result.keySet()) {
+            SimpleKey edgeKey = new SimpleKey(key.start.num1, key.end.num1);
+            SimpleKey negEdgeKey = new SimpleKey(key.start.num2, key.end.num2);
+
+            Set<CharClass> intersectionSet = result.get(key);
+            Set<CharClass> edgeSet = map.get(edgeKey);
+
+            // System.out.println(edgeKey + " " + negEdgeKey+ " " + intersectionSet+ " " + edgeSet);
+
+            // TODO HEURISTIC
+            // remove unwanted qualifiers if exact number of repeated elements is needed
+            // do not remove an entire edge
+            if ((edgeKey.num2 - edgeKey.num1 > 1 && negEdgeKey.num2 - negEdgeKey.num1 > 1) || intersectionSet.size() != edgeSet.size()) {
+                edgeSet.removeAll(intersectionSet);
+                if (edgeSet.size() == 0) {
+                    map.remove(edgeKey);
+                }
+            }
+        }
+    }
 
     // is a key of two number
     // used in a regular graph to represent and edge from num1 to num2

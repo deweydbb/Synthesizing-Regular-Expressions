@@ -2,40 +2,39 @@ package utils;
 
 import lombok.Getter;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * Represents a set of characters to match. Can include a quantifier
  */
 public class CharClass {
 
-    private final String representation;
-    private final CharSet charSet;
     @Getter
-    private final Quantifier quantifier;
+    private final String representation;
+    @Getter
+    private final QuantifierType quantifier;
 
     public CharClass(String characters) {
         this.representation = characters;
         this.quantifier = null;
-
-        charSet = new CharSet();
-
-        for (int i = 0; i < characters.length(); i++) {
-            char c = characters.charAt(i);
-
-            charSet.addChar(c);
-        }
     }
 
     // shallow copy okay sense class is immutable
-    private CharClass(CharClass c, Quantifier quantifier) {
+    private CharClass(CharClass c, QuantifierType quantifier) {
         this.representation = c.representation;
-        this.charSet = c.charSet.copy();
         this.quantifier = quantifier;
+    }
+
+    private CharClass(CharClass c) {
+        this.representation = "^" + c.representation;
+        this.quantifier = null;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof CharClass other) {
-            return charSet.equals(other.charSet) && quantifier == other.quantifier;
+            return representation.equals(other.representation) && quantifier == other.quantifier;
         }
 
         return false;
@@ -43,15 +42,28 @@ public class CharClass {
 
     @Override
     public int hashCode() {
-        return charSet.hashCode();
+        return representation.hashCode();
     }
 
-    public CharClass withQuantifier(Quantifier quantifier) {
+    public CharClass withQuantifier(QuantifierType quantifier) {
         return new CharClass(this, quantifier);
+    }
+
+    public CharClass withoutQuantifier() {
+        return new CharClass(this, null);
+    }
+
+    public CharClass withNegation() {
+        return new CharClass(this);
     }
 
     @Override
     public String toString() {
-        return "[" + representation + "]" + Quantifier.representation(quantifier);
+        return "[" + representation + "]" + QuantifierType.representation(quantifier);
+    }
+
+
+    public static Set<CharClass> getOptionalClasses(Set<CharClass> s) {
+        return s.stream().filter(c -> QuantifierType.optional(c.getQuantifier())).collect(Collectors.toSet());
     }
 }
