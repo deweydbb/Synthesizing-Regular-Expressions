@@ -137,7 +137,7 @@ public class RegexMerge {
             for (int j = regexs.size() - 1; j > i; j--) {
                 Operator r2 = regexs.get(j);
 
-                if (r1.toString().equals(r2.toString()) && r1 instanceof Concat c1 && r2 instanceof  Concat c2) {
+                if (!r1.toString().equals(r2.toString()) && r1 instanceof Concat c1 && r2 instanceof  Concat c2) {
                     int numShareStart = shareStart(c1, c2);
                     int numShareEnd = shareEnd(c1, c2);
 

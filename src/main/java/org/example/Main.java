@@ -78,7 +78,7 @@ public class Main {
         res = pruneRegexs(res, examples, negExamples);
 
         if (debug) {
-            // printRegularExpressions(res);
+            printRegularExpressions(res);
         }
 
         return res.subList(0, Math.min(30, res.size()));
@@ -164,6 +164,8 @@ public class Main {
 
             if (passed) {
                 res.add(regEx);
+            } else {
+                System.out.println("failed: " + regEx);
             }
         }
 
