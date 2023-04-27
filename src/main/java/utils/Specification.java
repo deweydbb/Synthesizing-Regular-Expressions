@@ -94,6 +94,7 @@ public class Specification {
 
             return res;
         } catch (Exception e) {
+            System.err.println(e.getMessage());
             return null;
         }
     }

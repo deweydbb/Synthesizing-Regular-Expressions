@@ -1,4 +1,4 @@
-package org.example;
+package main;
 
 import regex.Operator;
 import regex.RegexMerge;
@@ -13,17 +13,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * TODO:
- *      Have a union of single characters (or all with question qualifier) be combined into a character class
- */
-
 public class Main {
     public static void main(String[] args) {
+        if (args.length == 0) {
+            System.err.println("The specification file must be the first argument");
+            System.exit(1);
+        }
 
         long start = System.currentTimeMillis();
 
-        List<Specification> specs = Specification.readInSpec("./examples/test.txt");
+        List<Specification> specs = Specification.readInSpec(args[0]);
         if (specs == null) {
             System.err.println("Failed to read in spec correctly");
             System.exit(1);
